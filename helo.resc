@@ -1,0 +1,8 @@
+$bin=@build/release/stmBase.elf
+mach create "stm32f4"
+machine LoadPlatformDescription @platforms/boards/stm32f4_discovery-kit.repl
+sysbus LoadELF @build/release/stmBase.elf
+showAnalyzer sysbus.usart2
+
+
+
