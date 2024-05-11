@@ -11,6 +11,7 @@
 #define FALLING_EDGE          0x00200000U
 #define GPIO_OUTPUT_TYPE      0x00000010U
 
+
 #define GPIO_NUMBER           16U
 /*****************************************************************************/
 /*                       Driver Exposed HAL                                  */

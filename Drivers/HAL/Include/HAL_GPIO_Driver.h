@@ -119,6 +119,8 @@ rising & falling edge trigger detecting */
 
 #define GPIO_AF15_EVENTOUT      ((uint8_t)0x0F)  /* EVENTOUT Alternate Function mapping */
 
+#define GPIO_AF9_CAN1          ((uint8_t)0x09)  /*!< CAN1 Alternate Function mapping */
+
 /*****************************************************************************/
 /*****************************************************************************/
 /*****************************************************************************/

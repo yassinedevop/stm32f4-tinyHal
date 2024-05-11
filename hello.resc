@@ -1,8 +1,30 @@
+:name: STM32 NUCLEO-H753ZI
+:description: This script runs Zephyr CAN sample software on Nucleo board with CAN traffic connected to host via vcan bridge
+
+using sysbus
+
 $bin=@build/release/stmBase.elf
+
 mach create "stm32f4"
-machine LoadPlatformDescription @platforms/boards/stm32f4_discovery-kit.repl
-sysbus LoadELF @build/release/stmBase.elf
+include @platforms/boards/stm32f4_discovery-kit.repl
+
 showAnalyzer sysbus.usart2
 
+macro reset
+"""
+    sysbus LoadELF $bin
+"""
 
+runMacro $reset
 
+# Create internal CAN hub for routing frames
+emulation CreateCANHub "canHub"
+
+# Connect CAN controller to the CAN hub
+connector Connect can1 canHub
+
+# Create CAN bridge to host, by default it will be named `vcan0`
+machine CreateSocketCANBridge "socketcan"
+
+# Connect bridge to the internal network
+connector Connect socketcan canHub

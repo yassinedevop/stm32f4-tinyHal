@@ -14,11 +14,6 @@
 
 
 
-// tick
-static uint32_t tick = 0;
-
-
-
 /*****************************************************************************/
 /*                          Private Function Prototypes                      */
 /*****************************************************************************/
@@ -27,29 +22,7 @@ static void Hard_init(void);
 /*****************************************************************************/
 /*                          HAL Function Implementations                     */
 /*****************************************************************************/
-uint32_t HAL_GetTick(void){
-    return tick;
-}
-void HAL_IncTick(void){
-    tick++;
-}
-void SysTick_Handler(void)
-{
-    HAL_IncTick();
-}
-void HAL_Delay(uint32_t ms)
-{
-    uint32_t tickstart = HAL_GetTick();
-    uint32_t wait = ms;
-    
-    if(wait < HAL_MAX_DELAY)
-    {
-        wait = HAL_MAX_DELAY;
-    }
-    
-    while((HAL_GetTick() - tickstart) < wait);
 
-}
 
 
 /*****************************************************************************/
@@ -80,7 +53,7 @@ int main(void)
     
     while(1)
     {
-        Log("Bootloader is running...\n");
+        Log("Hello world\n");
         HAL_Delay(1000);
     }
 	return 0;

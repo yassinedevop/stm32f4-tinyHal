@@ -39,6 +39,13 @@ extern "C" {
 #define HAL_RCC_USART2_CLK_DISABLE()    RCC->APB1ENR &= ~RCC_APB1ENR_USART2EN
 #define HAL_RCC_USART6_CLK_DISABLE()    RCC->APB2ENR &= ~RCC_APB2ENR_USART6EN
 
+
+#define HAL_RCC_CAN1_CLK_ENABLE()       RCC->APB1ENR |= RCC_APB1ENR_CAN1EN
+#define HAL_RCC_CAN2_CLK_ENABLE()       RCC->APB1ENR |= RCC_APB1ENR_CAN2EN
+#define HAL_RCC_CAN1_CLK_DISABLE()      RCC->APB1ENR &= ~RCC_APB1ENR_CAN1EN
+#define HAL_RCC_CAN2_CLK_DISABLE()      RCC->APB1ENR &= ~RCC_APB1ENR_CAN2EN
+
+
 /*****************************************************************************/
 /*****************************************************************************/
 /*****************************************************************************/
@@ -47,6 +54,23 @@ extern "C" {
 /*****************************************************************************/
 /*                       Driver Exposed HAL                                  */
 /*****************************************************************************/
+
+
+
+/**
+  * @brief This function provides accurate delay (in milliseconds) based 
+  *        on SysTick counter flag.
+  * @note This function is declared as __weak to be overwritten in case of other
+  *       implementations in user file.
+  * @param Delay: specifies the delay time length, in milliseconds.
+  * @retval None
+  */
+void delay_ticks(uint32_t ticks);
+void HAL_Delay(uint32_t Delay);
+
+
+
+
 /*!
   * \brief  Returns the Presclaer for APB1
   * \retval uint8_t The prescaler value
