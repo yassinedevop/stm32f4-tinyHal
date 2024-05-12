@@ -17,6 +17,10 @@ macro reset
 
 runMacro $reset
 
+logLevel -1 sysbus.can1
+sysbus LogPeripheralAccess sysbus.can1
+
+
 # Create internal CAN hub for routing frames
 emulation CreateCANHub "canHub"
 

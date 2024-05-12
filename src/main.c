@@ -8,12 +8,19 @@
 #include "HAL_CRC_Driver.h"
 #include "HAL_UART_Driver.h"
 #include "HAL_Flash_Driver.h"
+#include "HAL_CAN_Driver.h"
 #include <string.h>
+#include <stdio.h>
 
-#define HAL_MAX_DELAY               0xFFFFFFFFU
+/*****************************************************************************/
+/*                          Private Variables                                */
+/*****************************************************************************/
 
+struct CAN_RxMessage msg = {};
+/*! \brief The uart handle
+ */
 
-
+static UART_HandleTypeDef UartHandle;
 /*****************************************************************************/
 /*                          Private Function Prototypes                      */
 /*****************************************************************************/
@@ -26,14 +33,6 @@ static void Hard_init(void);
 
 
 /*****************************************************************************/
-/*                          Private Variables                                */
-/*****************************************************************************/
-/*! \brief The uart handle
- */
-
-static UART_HandleTypeDef UartHandle;
-
-/*****************************************************************************/
 /*                          Private Function Implementations                  */
 /*****************************************************************************/
 /*! \brief  Logs a message to the host
@@ -44,20 +43,39 @@ void Log(char *msg)
     HAL_UART_Tx(&UartHandle, (uint8_t *)msg, strlen(msg));
 }
 
-/*! \brief  Main function
- */
-int main(void)
+
+void CAN1_RX0_IRQHandler(void)
 {
-    SystemCoreClockUpdate();
-    Hard_init();
-    
-    while(1)
+//   /* Receive FIFO 0 message pending interrupt management *********************/
+//   if ((interrupts & ((uint32_t)CAN_IER_FMPIE1)) != 0U)
+//   {
+    /* Check if message is still pending */
+    if ((CAN1->RF0R & CAN_RF0R_FMP0) != 0U)
     {
-        Log("Hello world\n");
-        HAL_Delay(1000);
+      /* Receive FIFO 0 mesage pending Callback */
+        Log("Message received\n");
+      /* Call weak (surcharged) callback */
+       HAL_CAN_GetMessage(&msg);
+                 char hallo[100];
+                 sprintf( hallo, "Received CAN message id=0x%lx RTR=%d DLC=%d "
+         "data={%x, %x, %x, %x, %x, %x, %x, %x}\n",
+         msg.canId,
+         0x00,
+         msg.dlc,
+         msg.data[0],
+         msg.data[1],
+         msg.data[2],
+         msg.data[3],
+         msg.data[4],
+         msg.data[5],
+         msg.data[6],
+         msg.data[7]);
+            Log(hallo);
     }
-	return 0;
 }
+
+
+
 
 /*! \brief  Initializes the bootloader for host communication.
  *          Communication will be done through the UART peripheral.
@@ -85,6 +103,37 @@ static void Hard_init(void)
     
     HAL_RCC_USART2_CLK_ENABLE();
     HAL_UART_Init(&UartHandle);
+
+    HAL_CAN_Init();
 }
+
+
+/*! \brief  Main function
+ */
+int main(void)
+{
+    SystemCoreClockUpdate();
+    Hard_init();
+    // set up GPIOC pin 12 as input
+    GPIO_InitTypeDef gpio;
+    gpio.Pin = GPIO_PIN_12;
+    gpio.Mode = GPIO_MODE_INPUT;
+    gpio.Pull = GPIO_PULL_NONE;
+    gpio.Speed = GPIO_SPEED_LOW;
+    HAL_GPIO_Init(GPIOC, &gpio);
+    
+    while(1)
+    {
+      uint8_t i =  HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_12);
+        if(i)
+        {
+                Log("Button pressed\n");
+                HAL_CAN_SendMessage(0x1FFU, 0x08U, (uint8_t *)"Hello123");
+                HAL_Delay(1000);
+        }
+    }
+	return 0;
+}
+
 
 
