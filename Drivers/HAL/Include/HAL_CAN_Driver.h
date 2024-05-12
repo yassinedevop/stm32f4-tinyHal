@@ -25,16 +25,23 @@
 
 
 
+#define __HAL_CAN_ENABLE_IT(__HANDLE__, __INTERRUPT__) (((__HANDLE__)->IER) |= (__INTERRUPT__))
+/****************************** STRUCTURES *****************************/
+
+struct CAN_RxMessage
+{
+    uint32_t canId;
+    uint8_t dlc;
+    uint8_t data[8];
+};
 /****************************** FUNCTION PROTOTYPES *****************************/
 /**
  * @brief Initializes the CAN peripheral.
  * This function must be called before using CAN peripherals.
  * It sets the desired baudrate and configures one CAN ID for
  * receive filtering.
- * @param baudrate The baudrate to initialize with.
- * @param filter The CAN ID to receive
  */
-void HAL_CAN_Init(uint32_t baudrate, uint16_t filter);
+void HAL_CAN_Init(void);
 
 /**
  * @brief Get CAN message from receive FIFO.
@@ -44,7 +51,8 @@ void HAL_CAN_Init(uint32_t baudrate, uint16_t filter);
  * @param data The receive buffer to fill. Must be 8 bytes wide.
  * @return The number of bytes in the received message.
  */
-uint8_t HAL_CAN_GetMessage(uint8_t *data);
+void HAL_CAN_GetMessage(struct CAN_RxMessage *msg);
+
 
 /**
  * @brief Sends a CAN frame on the bus.
@@ -57,6 +65,6 @@ uint8_t HAL_CAN_GetMessage(uint8_t *data);
  * @retval true Message scheduled successfully.
  * @retval false FIFO overflow, message not scheduled.
  */
-bool HAL_CAN_SendMessage(uint16_t canId, uint8_t dlc, const uint8_t *data);
+bool HAL_CAN_SendMessage(uint32_t canId, uint32_t dlc, const uint8_t *data);
 
 #endif /* DRVCAN_H_ */

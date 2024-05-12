@@ -1,0 +1,40 @@
+$bin ?= @build/release/stmBase.elf
+
+macro resetMachine
+"""
+   sysbus LoadELF $bin
+   sysbus.cpu VectorTableOffset 0x8000000
+"""
+
+macro reset
+"""
+   mach set 0; runMacro $resetMachine
+   mach set 1; runMacro $resetMachine
+"""
+
+macro initMachine
+"""
+    include @platforms/boards/stm32f4_discovery-kit.repl
+   showAnalyzer sysbus.usart2
+   connector Connect sysbus.can1 can
+   logLevel -1 sysbus.can1
+   sysbus LogPeripheralAccess sysbus.can1
+"""
+
+macro sendCANMessage
+"""
+   sysbus.gpioPortC OnGPIO 12 True
+   sleep 0.2
+   sysbus.gpioPortC OnGPIO 12 False
+"""
+
+emulation CreateCANHub "can"
+
+mach create "sender"
+runMacro $initMachine
+
+mach create "receiver1"
+runMacro $initMachine
+
+runMacro $reset
+mach set "sender"
