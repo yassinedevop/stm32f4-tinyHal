@@ -12,6 +12,7 @@ I always find make files to be a bit confusing, so I decided to use [Ceedling](h
 - RCC Drivers
 - Flash Drivers
 - CRC Drivers
+- CAN Drivers ( not fully implemented yet )
 
 ## Getting Started 🚀
 To get started with this project, follow these steps:
