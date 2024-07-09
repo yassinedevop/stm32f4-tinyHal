@@ -139,7 +139,7 @@ int main(void)
     setBootFlag(0x1U);
     while(1)
     {
-        Log("Hello, World!\n");
+        Log("Booting ....\n");
         HAL_Delay(5000);
         bootStateManager();
     }
