@@ -12,6 +12,29 @@
 #include <string.h>
 #include <stdio.h>
 
+#define BOOT_FLAG 0x801a000
+#define APP_START1 0x801b000
+#define APP_START2 0x8036000
+
+void setBootFlag(uint32_t flag){
+    *(uint32_t *)BOOT_FLAG = flag;
+}
+
+
+void bootStateManager(){
+    uint32_t bootFlag = *(uint32_t *)BOOT_FLAG;
+    if(bootFlag == 0){
+        jumpToApp(APP_START1);
+    }
+    if(bootFlag == 1){
+        jumpToApp(APP_START2);
+    }
+}
+void jumpToApp(uint32_t startAddress){
+    void (*app)(void) = (void (*)(void))(*(uint32_t *)(startAddress + 4));
+    __set_MSP(*(uint32_t *)startAddress);
+    app();
+}
 /*****************************************************************************/
 /*                          Private Variables                                */
 /*****************************************************************************/
@@ -103,7 +126,6 @@ static void Hard_init(void)
     
     HAL_RCC_USART2_CLK_ENABLE();
     HAL_UART_Init(&UartHandle);
-
     HAL_CAN_Init();
 }
 
@@ -114,25 +136,13 @@ int main(void)
 {
     SystemCoreClockUpdate();
     Hard_init();
-    // set up GPIOC pin 12 as input
-    GPIO_InitTypeDef gpio;
-    gpio.Pin = GPIO_PIN_12;
-    gpio.Mode = GPIO_MODE_INPUT;
-    gpio.Pull = GPIO_PULL_NONE;
-    gpio.Speed = GPIO_SPEED_LOW;
-    HAL_GPIO_Init(GPIOC, &gpio);
-    
+    setBootFlag(0x1U);
     while(1)
     {
-      uint8_t i =  HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_12);
-        if(i)
-        {
-                Log("Button pressed\n");
-                HAL_CAN_SendMessage(0x1FFU, 0x08U, (uint8_t *)"Hello123");
-                HAL_Delay(1000);
-        }
+        Log("Hello, World!\n");
+        HAL_Delay(5000);
+        bootStateManager();
     }
-	return 0;
 }
 
 

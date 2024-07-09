@@ -1,0 +1,36 @@
+:name: STM32 NUCLEO-H753ZI
+:description: This script runs Zephyr CAN sample software on Nucleo board with CAN traffic connected to host via vcan bridge
+
+using sysbus
+
+$app1=@build/release/stmBase.elf
+$app2=@build/release/stmBase2.elf
+$boot=@build/release/bootloader.elf
+
+
+mach create "stm32f4"
+include @platforms/boards/stm32f4_discovery-kit.repl
+
+showAnalyzer sysbus.usart2
+
+macro loadFirst
+"""
+   sysbus LoadELF $boot
+   sysbus.cpu VectorTableOffset 0x8000000
+"""
+
+macro loadSecond
+"""
+    sysbus LoadELF $app1
+    sysbus.cpu VectorTableOffset 0x801b000
+"""
+macro loadthird
+"""
+    sysbus LoadELF $app2
+    sysbus.cpu VectorTableOffset 0x8036000
+
+"""
+
+logLevel -1 sysbus.can1
+sysbus LogPeripheralAccess sysbus.can1
+
