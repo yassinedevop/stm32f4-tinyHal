@@ -19,7 +19,7 @@
 
 
 :release_build:
- :output: bootloader
+ :output: stmBase
  :use_assembly: TRUE
  :artifacts:
     - stmBase.map

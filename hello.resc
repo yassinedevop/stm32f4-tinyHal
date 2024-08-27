@@ -1,5 +1,5 @@
-:name: STM32 NUCLEO-H753ZI
-:description: This script runs Zephyr CAN sample software on Nucleo board with CAN traffic connected to host via vcan bridge
+:name: STM32F4 Socket CAN
+:description: This script is used to connect the simulated board to linux kernel module socket CAN
 
 using sysbus
 
